@@ -12,7 +12,7 @@ services:
         sync: false
       - key: GROQ_API_KEY_2
         sync: false
-      - key: SERPSTACK_API_KEY
+      - key: SERP_API_KEY
         sync: false
       - key: WEBSCRAPING_AI_API_KEY
         sync: false
