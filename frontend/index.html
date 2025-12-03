@@ -1395,10 +1395,22 @@
                 const name = place.name || 'Unknown Place';
                 const address = place.address || '';
                 const phone = place.phone || '';
-                const rating = place.rating || 'N/A';
                 const website = place.website || place.link || '';
-                const priceLevel = place.price_level || '';
                 const types = place.type || place.types || '';
+                
+                // Safely extract rating (could be number, string, or object)
+                let rating = place.rating;
+                if (typeof rating === 'object' && rating !== null) {
+                    rating = rating.value || rating.rating || 'N/A';
+                }
+                rating = rating || 'N/A';
+                
+                // Safely extract price level (could be string or object)
+                let priceLevel = place.price_level;
+                if (typeof priceLevel === 'object' && priceLevel !== null) {
+                    priceLevel = priceLevel.value || priceLevel.level || '';
+                }
+                priceLevel = priceLevel || '';
                 
                 // Build action buttons
                 let actionsHTML = '';
@@ -1452,17 +1464,32 @@
             container.scrollIntoView({ behavior: 'smooth' });
             
             if (Array.isArray(recommendations) && recommendations.length > 0) {
-                content.innerHTML = recommendations.map(rec => `
+                content.innerHTML = recommendations.map(rec => {
+                    // Safely extract rating
+                    let rating = rec.rating;
+                    if (typeof rating === 'object' && rating !== null) {
+                        rating = rating.value || rating.rating || 'N/A';
+                    }
+                    rating = rating || 'N/A';
+                    
+                    // Safely extract price
+                    let price = rec.price || rec.price_level;
+                    if (typeof price === 'object' && price !== null) {
+                        price = price.value || price.level || '';
+                    }
+                    price = price || 'Ask for quote';
+                    
+                    return `
                     <div class="result-card">
                         <h3>${rec.name || 'Unknown Place'}</h3>
                         <div class="result-info">
                             <div class="result-info-item">
                                 <strong>⭐ Rating</strong>
-                                ${rec.rating || 'N/A'}
+                                ${rating}
                             </div>
                             <div class="result-info-item">
-                                <strong>💰 Negotiated Price</strong>
-                                ${rec.price || 'Ask for quote'}
+                                <strong>💰 Price</strong>
+                                ${price}
                             </div>
                             <div class="result-info-item">
                                 <strong>📍 Location</strong>
@@ -1474,7 +1501,7 @@
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             } else {
                 content.innerHTML = '<p style="text-align:center; color: var(--ink-secondary);">No matches found fitting criteria.</p>';
             }

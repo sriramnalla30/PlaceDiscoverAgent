@@ -465,12 +465,25 @@ Who is the winner?
         
         if not winner:
             winner = recommendations[0] # Fallback to first
+        
+        # Safely extract rating value
+        winner_rating = winner.get('rating')
+        if isinstance(winner_rating, dict):
+            winner_rating = winner_rating.get('value') or winner_rating.get('rating') or 'N/A'
+        winner_rating = winner_rating or 'N/A'
+        
+        # Safely extract reviews count
+        reviews_count = winner.get('reviews_count', 0)
+        try:
+            reviews_count = int(reviews_count) if reviews_count else 0
+        except (ValueError, TypeError):
+            reviews_count = 0
             
         # Format the final output
         result_text = f"""
 🏆 **WINNER SELECTED:** {winner.get('name')}
 
-⭐ **Rating:** {winner.get('rating')}/5.0 ({winner.get('reviews_count')} reviews)
+⭐ **Rating:** {winner_rating}/5.0 ({reviews_count:,} reviews)
 📍 **Address:** {winner.get('address')}
 
 **Why it won:**
